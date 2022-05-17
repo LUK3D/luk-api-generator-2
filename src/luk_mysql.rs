@@ -13,14 +13,17 @@ pub fn create_pool(config:DbConfig) -> mysql::Pool{
 
     let mut conf = config;
 
-    if config.host.len()==0 {
-            config.host =  "102.0.0.1".to_string();
+    if conf.host.len()==0 {
+        conf.host =  "102.0.0.1".to_string();
+    }
+    if conf.user.len()==0 {
+        conf.user =  "root".to_string();
     }
     
     let opts = mysql::OptsBuilder::new()
     .user(Some(conf.user))
-    .pass(Some(conf.pwd).unwrap())
-    .ip_or_hostname(Some(conf.host).unwrap())
+    .pass(Some(conf.pwd))
+    .ip_or_hostname(Some(conf.host))
     .db_name(Some(conf.db));
     
     return mysql::Pool::new(opts).unwrap();
@@ -30,7 +33,7 @@ pub fn create_pool(config:DbConfig) -> mysql::Pool{
 
 
 /**Function to connect to mysql server and get some data */
-pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)){
+pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)->Vec<String>)->Vec<String>{
    
     let mut conn = pool.get_conn().unwrap();
         
@@ -56,5 +59,5 @@ pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)){
         |table_name| Dados {table_name:table_name}).expect("Query failed.");
      
  
-    callback(res);
+    return callback(res);
 }

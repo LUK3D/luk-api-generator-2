@@ -5,19 +5,16 @@ mod luk_utils;
 use luk_utils::read_input;
 use luk_utils::read_file;
 mod luk_mysql;
+
 use luk_mysql::mysql_connect;
+use luk_mysql::create_pool;
+use luk_mysql::types::DbConfig;
+
 
 
 fn main() {
 
-    pause();
-    
     welcome();
-    mysql_connect(|res:Vec<luk_mysql::Dados>|{
-        for table_name in res {
-            println!("{}",table_name.table_name);
-        }
-    });
 
     let  db:String;
     let  path:String;
@@ -28,8 +25,35 @@ fn main() {
     println!("|______________________________________________________________|");
     println!("\n|Criando a API {0}Em {1} ",db, path );
     println!("|______________________________________________________________|");
+    println!("| {}",db);
+    let mut tables: Vec<String> = vec![];
+    tables = mysql_connect(create_pool(db_config(&db)),processar);
 
-    
+    for t in tables {
+        println!("|______________________________________________________________|");
+        println!("| TABELA: {}",t.to_string());
+    }
+}
+
+fn processar(res:Vec<luk_mysql::Dados>)->Vec<String>{
+    let mut tables: Vec<String> = vec![];
+    for elem in res {
+        if !tables.contains(&elem.table_name.to_string()){
+            tables.push(elem.table_name.to_string());
+        }
+    }
+    return tables;
+}
+
+
+/**Creates new database configuration instance. */
+fn db_config(db:&str) -> DbConfig{
+    return DbConfig{
+        db: String::from(db),
+        user: String::from("root"),
+        pwd:String::from(""),
+        host:String::from("127.0.0.1")
+    };
 }
 
 
@@ -38,8 +62,6 @@ fn main() {
 fn welcome(){
     println!("{}",read_file("./welcome.txt"));
 }
-
-
 
 
 

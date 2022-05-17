@@ -6,8 +6,12 @@ pub struct Dados {
 
 /** ## Database Configuration */
 pub struct DbConfig{
+    /**Username */
     pub user:String,
+    /**Database */
     pub db:String,
+    /**Password */
     pub pwd:String,
-    pub host: String
+    /**Host */
+    pub host:String
 }

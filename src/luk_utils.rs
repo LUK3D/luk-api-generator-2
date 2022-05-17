@@ -26,9 +26,9 @@ pub fn read_file(path:&str)-> String {
  * Extended stdin with witch the user can print a message before waiting for input */
 pub fn read_input(message:Option<&str>)-> String{
     if Some(message) != Some(None) {
-        println!("{0}: ", Some(message).unwrap().unwrap());
+        print!("{0}: ", Some(message).unwrap().unwrap());
     }
     let mut input_string =  String::new();
     stdin().read_line(&mut input_string).ok().expect("Failed to read line");
-    return input_string;
+    return String::from(input_string.replace('\n', "").trim());
 }
