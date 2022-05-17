@@ -5,19 +5,33 @@ use mysql::prelude::*;
 #[path = "types.rs"]
 pub mod types;
 pub use types::Dados;
+pub use types::DbConfig;
+
+
+
+pub fn create_pool(config:DbConfig) -> mysql::Pool{
+
+    let mut conf = config;
+
+    if config.host.len()==0 {
+            config.host =  "102.0.0.1".to_string();
+    }
+    
+    let opts = mysql::OptsBuilder::new()
+    .user(Some(conf.user))
+    .pass(Some(conf.pwd).unwrap())
+    .ip_or_hostname(Some(conf.host).unwrap())
+    .db_name(Some(conf.db));
+    
+    return mysql::Pool::new(opts).unwrap();
+}
 
 
 
 
 /**Function to connect to mysql server and get some data */
-pub fn mysql_connect(callback: fn(Vec<Dados>)){
-    let opts = mysql::OptsBuilder::new()
-    .user(Some("root"))
-    .pass(Some(""))
-    .ip_or_hostname(Some("127.0.0.1"))
-    .db_name(Some("teste1"));
-    
-    let pool = mysql::Pool::new(opts).unwrap();
+pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)){
+   
     let mut conn = pool.get_conn().unwrap();
         
     /* 
