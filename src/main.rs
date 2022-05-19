@@ -27,8 +27,7 @@ fn main() {
     welcome();
 
     let mut project_path = "N:\\rust\\luk-api-generator\\src\\dist";
-    /**Generating project structure */
-    gen_structure(project_path,||{});
+  
 
     let  db:String;
     let  path:String;
@@ -37,14 +36,16 @@ fn main() {
     println!("______________________________________________________________");
     path = read_input(Some("Enter the output Absolute Path"));
     println!("______________________________________________________________");
-    println!("\nCriando a API {0} Em {1} ",db, project_path );
-    println!("______________________________________________________________");
-    println!(" {}",db);
-
 
     if path.trim().len()>1{
         project_path = &path;
     }
+
+    println!("\nCriando a API {0} Em {1} ",db, project_path );
+    println!("______________________________________________________________");
+
+      /**Generating project structure */
+      gen_structure(project_path,||{});
 
     let mut tables: Vec<String> = vec![];
     tables = mysql_connect(create_pool(db_config(&db)),
@@ -90,6 +91,7 @@ fn main() {
         fs::write(&format!("{0}\\resources\\{1}Resource.php",project_path,table.upper), &gen_resources(&table)).unwrap();
     }
     println!("______________________________________________________________");
+    println!("DONE!");
     
     pause();
 
