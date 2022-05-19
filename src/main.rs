@@ -1,5 +1,6 @@
 use std::io;
 use std::io::prelude::*;
+use std::fs;
 
 mod luk_utils;
 use luk_utils::read_input;
@@ -14,41 +15,35 @@ use luk_mysql::types::TableInfo;
 
 mod luk_generators;
 use luk_generators::gen_structure;
+use luk_generators::gen_routers;
+use luk_generators::gen_controllers;
+use luk_generators::gen_models;
+use luk_generators::gen_resources;
 
 
 
 fn main() {
 
-    println!("Converter a palavre eu_sou_pessoa para: {0}", &luk_utils::snakeToCamel("e_eu_sou_uma_pessoa").to_string());
-
     welcome();
 
-    gen_structure("N:\\rust\\luk-api-generator\\src\\dist",||{
-
-    });
+    let mut project_path = "N:\\rust\\luk-api-generator\\src\\dist";
+    /**Generating project structure */
+    gen_structure(project_path,||{});
 
     let  db:String;
     let  path:String;
-    println!("|______________________________________________________________|");
-    db = read_input(Some("|Informe o nome da Base de Dados"));
-    println!("|______________________________________________________________|");
-    path = read_input(Some("|Informe a localização do Projecto"));
-    println!("|______________________________________________________________|");
-    println!("\n|Criando a API {0}Em {1} ",db, path );
-    println!("|______________________________________________________________|");
-    println!("| {}",db);
+    println!("______________________________________________________________");
+    db = read_input(Some("Enter the name of the Database"));
+    println!("______________________________________________________________");
+    path = read_input(Some("Enter the output Absolute Path"));
+    println!("______________________________________________________________");
+    println!("\nCriando a API {0} Em {1} ",db, project_path );
+    println!("______________________________________________________________");
+    println!(" {}",db);
 
-    let mut databases: Vec<String> = vec![];
-    databases = mysql_connect(create_pool(db_config(&db)),
-    "
-    SELECT schema_name
-    FROM information_schema.schemata
-    "
-    ,processar);
 
-    for t in databases {
-        println!("|______________________________________________________________|");
-        println!("| DATABASE: {}",t.to_string());
+    if path.trim().len()>1{
+        project_path = &path;
     }
 
     let mut tables: Vec<String> = vec![];
@@ -60,25 +55,45 @@ fn main() {
     "
     ,processar);
 
-
     let mut table_info = TableInfo{
-        name: vec![]
+        names: vec![]
     };
-
-
-
-
 
 
     for t in tables {
         // println!("|______________________________________________________________|");
         // println!("| TABELA: {}",t.to_string());
 
-        table_info.name.push(TableName{
+        let t_name = TableName{
             lower:t.to_string(),
-            upper:luk_utils::snakeToCamel(&t.to_string()).to_string()
-        });
+            upper:luk_utils::snakeToCamel(&t.to_string()).to_string(),
+            columns: mysql_connect(create_pool(db_config(&db)),
+            &format!("
+            select  COLUMN_NAME  from information_schema.columns
+            where table_schema = '{0}' and TABLE_NAME = '{1}'
+            order by table_name,ordinal_position
+            ",&db,&t.to_string())
+            ,processar)
+        };
+
+        table_info.names.push(t_name);
+        // fs::write(&format!("{0}\\controllers\\{1}Controller.php",project_path,table_info.names[0].upper), &gen_controllers(t_name)).unwrap();
     }
+
+    pause();
+
+    /** Gerando os arquivos ------------------------------------ --------------------------------------*/
+    fs::write(&format!("{0}\\route\\api.php",project_path), &gen_routers(&table_info.names)).unwrap();
+    for table in table_info.names {
+        fs::write(&format!("{0}\\controllers\\{1}Controller.php",project_path,table.upper), &gen_controllers(&table)).unwrap();
+        fs::write(&format!("{0}\\models\\{1}.php",project_path,table.upper), &gen_models(&table)).unwrap();
+        fs::write(&format!("{0}\\resources\\{1}Resource.php",project_path,table.upper), &gen_resources(&table)).unwrap();
+    }
+    println!("______________________________________________________________");
+    
+    pause();
+
+
 }
 
 

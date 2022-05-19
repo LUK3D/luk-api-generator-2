@@ -19,9 +19,10 @@ pub struct DbConfig{
 
 pub struct TableName{
     pub lower:String,
-    pub upper:String
+    pub upper:String,
+    pub columns: Vec<String>
 }
 
 pub struct TableInfo{
-    pub name:Vec<TableName>
+    pub names:Vec<TableName>
 }

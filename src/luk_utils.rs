@@ -1,5 +1,6 @@
 
 
+use std::path::PathBuf;
 use std::env;
 use std::fs;
 use std::io::stdin;
@@ -28,7 +29,7 @@ pub fn read_file(path:&str)-> String {
  * Extended stdin with witch the user can print a message before waiting for input */
 pub fn read_input(message:Option<&str>)-> String{
     if Some(message) != Some(None) {
-        print!("{0}: ", Some(message).unwrap().unwrap());
+        println!("{0}: ", Some(message).unwrap().unwrap());
     }
     let mut input_string =  String::new();
     stdin().read_line(&mut input_string).ok().expect("Failed to read line");
@@ -36,7 +37,9 @@ pub fn read_input(message:Option<&str>)-> String{
 }
 
 
-
+pub fn get_current_working_dir() -> std::io::Result<PathBuf> {
+    env::current_dir()
+}
 
 
 
