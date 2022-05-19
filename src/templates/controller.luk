@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Resources\{TABLE_U}Resource;
+use App\Models\{TABLE_U};
+use Illuminate\Http\Request;
+
+class {TABLE_U}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        ${TABLE_L} = {TABLE_U}::paginate(10);
+
+        return {TABLE_U}Resource::collection(${TABLE_L});
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        ${TABLE_L} = new {TABLE_U}();
+
+
+        $response = ${TABLE_L}->create($request->request->all());
+
+        if($response){
+            return new {TABLE_U}Resource($response);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        ${TABLE_L} = {TABLE_U}::findOrFail($id);
+
+        return new {TABLE_U}Resource(${TABLE_L});
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        ${TABLE_L} = {TABLE_U}::findOrFail($id);
+
+        if(${TABLE_L}->update($request->request->all())){
+            return new {TABLE_U}Resource(${TABLE_L});
+        }
+    }
+    
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        ${TABLE_L} = {TABLE_U}::findOrFail($id);
+        if(${TABLE_L}->delete()){
+            return new {TABLE_U}Resource(${TABLE_L});
+        }
+    }
+}

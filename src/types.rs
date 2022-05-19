@@ -15,3 +15,13 @@ pub struct DbConfig{
     /**Host */
     pub host:String
 }
+
+
+pub struct TableName{
+    pub lower:String,
+    pub upper:String
+}
+
+pub struct TableInfo{
+    pub name:Vec<TableName>
+}

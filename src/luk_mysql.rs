@@ -33,7 +33,7 @@ pub fn create_pool(config:DbConfig) -> mysql::Pool{
 
 
 /**Function to connect to mysql server and get some data */
-pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)->Vec<String>)->Vec<String>{
+pub fn mysql_connect(pool:mysql::Pool,query:&str, callback: fn(Vec<Dados>)->Vec<String>)->Vec<String>{
    
     let mut conn = pool.get_conn().unwrap();
         
@@ -50,12 +50,7 @@ pub fn mysql_connect(pool:mysql::Pool, callback: fn(Vec<Dados>)->Vec<String>)->V
         });
     */
 
-      let res = conn.query_map(
-        "
-        select   table_name  from information_schema.columns
-        where table_schema = 'teste1'
-        order by table_name,ordinal_position
-        ",
+      let res = conn.query_map(query,
         |table_name| Dados {table_name:table_name}).expect("Query failed.");
      
  
